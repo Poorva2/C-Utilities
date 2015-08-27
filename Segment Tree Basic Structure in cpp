@@ -1,0 +1,108 @@
+#include<iostream>
+#include<vector>
+#include<stdio.h>
+#include<math.h>
+#include<string.h>
+
+using namespace std;
+
+#define ll long long int
+#define MOD 1000000007
+#define repi(i,x,y) for(i=x;i<=y;i++)
+#define invrepi(i,x,y) for(i=x;i>=y;i--)
+#define max(x,y) (((x)>(y))?(x):(y))
+#define min(x,y) (((x)<(y))?(x):(y))
+#define abs(x) ((x>=0)?(x):(-(x)))
+
+template <typename T>
+class SegTree
+{
+private:
+    ll constructSTUtil(const vector<ll>& v,ll start,ll end,ll index)
+    {
+        if(start==end)
+        {
+            tree[index]=v[start];
+            return v[start];
+        }
+        ll mid = start + (end-start)/2;
+        //TODO: Here the function is made to store sum of segments. You can change Accordingly
+        tree[index] = constructSTUtil(v,start,mid,2*index +1) +
+                      constructSTUtil(v,mid+1,end,2*index+2);
+        return tree[index];
+
+    }
+    void updateUtil(ll start,ll end,ll index,ll value,ll treeIndex)
+    {
+        //If index is not in the range represented by node, No need to update it. Just return.
+        if(index<start||index>end)
+            return;
+        //This step is to make change according to new value
+        tree[treeIndex] = //Update Accordingly using the value
+        if(start!=end)
+        {
+            //Update the children too
+            ll mid = start + (end-start)/2 ;
+            updateUtil(start,mid,index,value,2*treeIndex+1);    //Updating left child
+            updateUtil(mid+1,end,index,value,2*treeIndex+2);    //Updating right child
+        }
+    }
+    T getValUtil(ll segstart,ll segend,ll querystart,ll queryend,ll treeIndex)
+    {
+        //If The segment is fully contained in the Range return the value of that segment
+        if(querystart<=segstart && queryend>=segend)
+            return tree[treeIndex];
+        //If range is completely outside the segment
+        if(segend<querystart || segstart>queryend)
+            return APPROPRIATE VALUE;
+        //Example : For sum of range return 0;
+        //          For Range minimum query return INF. etc.
+        ll mid = segstart+ (segend-segstart)/2;
+        return SOME COMBI OF getValUtil(segstart,mid,querystart,queryend,2*treeIndex+1) &
+                             getValUtil(mid+1,segend,querystart,queryend,2*treeIndex+2)
+        //Example : For sum of range query return sum of the two values.
+        //          For range minimum query return minmum of the two. etc.
+    }
+public:
+    vector<T> tree;
+    SegTree(int n)      //Param = Size of array/vector for which segment tree is to be made
+    {
+        //This Constructor just allocates the size for the segment tree vector;
+        int x;
+        x = ceil(log2(n));
+        int maxsize = 2*(1<<x)-1;
+        int i;
+        repi(i,0,maxsize-1)
+            tree.push_back(0);
+    }
+    void makeSegTree(const vector<ll>& v)
+    {
+        constructSTUtil(v,0,v.size()-1,0);
+    }
+    void update(vector<ll>& v, ll index, ll value)
+    {
+        //Value at index in the vector v to be made = value
+        if(index<0||index>=v.size())
+        {
+            cout<<"Invalid Index"<<endl;
+            return;
+        }
+        v[index] = value;
+        updateUtil(0,v.size()-1,index,value,0);
+    }
+    T getValForRange(vector<ll>& v,int start,int end)
+    {
+        if(start<0||end>v.size())
+        {
+            cout<<"Invalid input"<<endl;
+            return;
+        }
+        return getValUtil(0,v.size()-1,start,end,0);
+    }
+
+};
+
+int main()
+{
+    return 0;
+}
