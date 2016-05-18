@@ -106,6 +106,10 @@ public:
             }
         }
     }
+    void delete(Node n)
+    {
+        
+    }
     void print()
     {
         if(root==0)
